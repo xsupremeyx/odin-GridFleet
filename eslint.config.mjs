@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import html from 'eslint-plugin-html';
+import globals from 'globals';
 
 export default [
   {
@@ -27,10 +28,19 @@ export default [
       'no-console': 'off',
     },
   },
+  // Jest test files
+  {
+    files: ['**/*.test.js', '**/*.spec.js', '**/__tests__/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+  },
 
   // Webpack configs (Node, CommonJS)
   {
-    files: ['webpack.*.js', '*.config.js'],
+    files: ['webpack.*.js', 'babel.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'script',
