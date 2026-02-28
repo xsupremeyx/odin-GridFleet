@@ -1,4 +1,4 @@
-import {Ship} from './Ship';
+import {Ship} from '../../src/classes/Ship';
 
 describe('Ship', ()=> {
     test('Ship Object Creation', ()=>{
