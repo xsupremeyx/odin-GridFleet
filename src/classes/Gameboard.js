@@ -43,7 +43,6 @@
 //         this.ships.push(ship);
 //     };
 // }
-import {Ship} from './Ship.js';
 
 
 export class Gameboard {
@@ -72,6 +71,9 @@ export class Gameboard {
         if (!hit) {
             this.missedShots.push(coordinate);
         }
-        
+    }
+
+    areAllShipsSunk = () => {
+        return this.ships.every(({ship}) => ship.isSunk());
     }
 }

@@ -36,4 +36,27 @@ describe('Gameboard class tests', () => {
         expect(gameboard.ships[0].ship.hits).toBe(1);
         expect(gameboard.missedShots.length).toBe(0);
     });
+    test('areAllShipsSunk returns False if atleast one ship is not sunk', () => {
+        const ship1 = new Ship(3);
+        const ship2 = new Ship(2);
+        gameboard.placeShip(ship1,[[0,0],[0,1],[0,2]]);
+        gameboard.placeShip(ship2,[[1,0],[1,1]]);
+        gameboard.receiveAttack([0,0]);
+        gameboard.receiveAttack([0,1]);
+        gameboard.receiveAttack([0,2]);
+        gameboard.receiveAttack([1,0]);
+        expect(gameboard.areAllShipsSunk()).toBe(false);
+    });
+    test('areAllShipsSunk returns True if all ships are sunk', () => {
+        const ship1 = new Ship(3);
+        const ship2 = new Ship(2);
+        gameboard.placeShip(ship1,[[0,0],[0,1],[0,2]]);
+        gameboard.placeShip(ship2,[[1,0],[1,1]]);
+        gameboard.receiveAttack([0,0]);
+        gameboard.receiveAttack([0,1]);
+        gameboard.receiveAttack([0,2]);
+        gameboard.receiveAttack([1,0]);
+        gameboard.receiveAttack([1,1]);
+        expect(gameboard.areAllShipsSunk()).toBe(true);
+    });
 });
