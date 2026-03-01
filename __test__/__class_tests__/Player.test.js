@@ -21,4 +21,21 @@ describe('Player class', () => {
         player1.attack(player2, [0, 0]);
         expect(ship.hits).toBe(1);
     });
+
+    test('Computer player can make random attack', () => {
+        const player1 = new Player('Player1');
+        const player2 = new Player('Computer');
+        const ship = new Ship(3);
+        player1.gameboard.placeShip(ship, [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+        ]);
+        player2.makeRandomAttack(player1);
+        if (ship.hits > 0) {
+            expect(ship.hits).toBe(1);
+        } else {
+            expect(player1.gameboard.missedShots.length).toBe(1);
+        }
+    });
 });
