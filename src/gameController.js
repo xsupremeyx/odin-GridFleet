@@ -1,18 +1,20 @@
 import { Player } from './classes/Player.js';
 import { Ship } from './classes/Ship.js';
 
-
 const GameController = (() => {
     let player1;
     let player2;
     let currentPlayer;
     let enemyPlayer;
 
+    let gameOver;
+    let winner;
+
     const hardCodedShips = () => {
         currentPlayer.gameboard.placeShip(new Ship(3), [
-            [0, 0], 
-            [0, 1], 
-            [0, 2]
+            [0, 0],
+            [0, 1],
+            [0, 2],
         ]);
         currentPlayer.gameboard.placeShip(new Ship(2), [
             [2, 0],
@@ -30,6 +32,8 @@ const GameController = (() => {
     };
 
     const initGame = () => {
+        gameOver = false;
+        winner = null;
         player1 = new Player('Player1');
         player2 = new Player('Computer');
         currentPlayer = player1;
@@ -39,6 +43,8 @@ const GameController = (() => {
 
     const getCurrentPlayer = () => currentPlayer;
     const getEnemyPlayer = () => enemyPlayer;
+    const isGameOver = () => gameOver;
+    const getWinner = () => winner;
 
     const switchPlayer = () => {
         [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
@@ -50,14 +56,21 @@ const GameController = (() => {
         } else {
             currentPlayer.attack(enemyPlayer, coordinate);
         }
-        switchPlayer();
-    }
+        if (enemyPlayer.gameboard.areAllShipsSunk()) {
+            gameOver = true;
+            winner = currentPlayer.type;
+        } else {
+            switchPlayer();
+        }
+    };
 
     return {
         initGame,
         getCurrentPlayer,
         getEnemyPlayer,
         playTurn,
+        isGameOver,
+        getWinner,
     };
 })();
 
