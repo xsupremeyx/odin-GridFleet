@@ -1,11 +1,11 @@
-import {Ship} from '../../src/classes/Ship';
+import { Ship } from '../../src/classes/Ship';
 
-describe('Ship', ()=> {
-    test('Ship Object Creation', ()=>{
+describe('Ship', () => {
+    test('Ship Object Creation', () => {
         const ship = new Ship(3);
         expect(ship.length).toBe(3);
     });
-    test('Initial hit status',()=> {
+    test('Initial hit status', () => {
         const ship = new Ship(3);
         expect(ship.hits).toBe(0);
         ship.hit();

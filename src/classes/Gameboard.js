@@ -1,66 +1,22 @@
-// export class Gameboard {
-//     constructor() {
-//         this.board = [];
-//         this.ships = [];
-//         this.missedShots = [];
-//         for (let i = 0; i < 10; i++) {
-//             this.board.push(new Array(10).fill(null));
-//         }
-//     }
-
-//     placeShip = (ship, x, y, orientation) => {
-//         if (orientation === 'horizontal') {
-//             for (let i = 0; i < ship.length; i++) {
-//                 if (x + i >= 10 || y >= 10 || x < 0 || y < 0) {
-//                     throw new Error(
-//                         'Invalid placement: Ship extends beyond the board boundaries.'
-//                     );
-//                 } else if (this.board[y][x + i] !== null) {
-//                     throw new Error(
-//                         'Invalid placement: Ship overlaps with another ship.'
-//                     );
-//                 }
-//             }
-//             for (let i = 0; i < ship.length; i++) {
-//                 this.board[y][x + i] = ship;
-//             }
-//         } else {
-//             for (let i = 0; i < ship.length; i++) {
-//                 if (y + i >= 10 || x >= 10 || x < 0 || y < 0) {
-//                     throw new Error(
-//                         'Invalid placement: Ship extends beyond the board boundaries.'
-//                     );
-//                 } else if (this.board[y + i][x] !== null) {
-//                     throw new Error(
-//                         'Invalid placement: Ship overlaps with another ship.'
-//                     );
-//                 }
-//             }
-//             for (let i = 0; i < ship.length; i++) {
-//                 this.board[y + i][x] = ship;
-//             }
-//         }
-//         this.ships.push(ship);
-//     };
-// }
-
-
 export class Gameboard {
-    constructor(){
+    constructor() {
         this.ships = [];
         this.missedShots = [];
     }
 
     placeShip = (ship, coordinates) => {
-        this.ships.push({ship, coordinates});
-    }
+        this.ships.push({ ship, coordinates });
+    };
 
     receiveAttack = (coordinate) => {
         let hit = false;
         for (let i = 0; i < this.ships.length; i++) {
-            const {ship, coordinates} = this.ships[i];
+            const { ship, coordinates } = this.ships[i];
             for (let j = 0; j < coordinates.length; j++) {
-                if (coordinates[j][0] === coordinate[0] && coordinates[j][1] === coordinate[1]) {
+                if (
+                    coordinates[j][0] === coordinate[0] &&
+                    coordinates[j][1] === coordinate[1]
+                ) {
                     ship.hit();
                     hit = true;
                     break;
@@ -71,9 +27,9 @@ export class Gameboard {
         if (!hit) {
             this.missedShots.push(coordinate);
         }
-    }
+    };
 
     areAllShipsSunk = () => {
-        return this.ships.every(({ship}) => ship.isSunk());
-    }
+        return this.ships.every(({ ship }) => ship.isSunk());
+    };
 }
