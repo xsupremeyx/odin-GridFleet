@@ -45,22 +45,41 @@ const GameController = (() => {
     const getEnemyPlayer = () => enemyPlayer;
     const isGameOver = () => gameOver;
     const getWinner = () => winner;
+    const getPlayer1 = () => player1;
+    const getPlayer2 = () => player2;
 
-    const switchPlayer = () => {
-        [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
-    };
+    // const switchPlayer = () => {
+    //     [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
+    // };
 
     const playTurn = (coordinate) => {
-        if (currentPlayer.type === 'Computer') {
-            currentPlayer.makeRandomAttack(enemyPlayer);
-        } else {
-            currentPlayer.attack(enemyPlayer, coordinate);
-        }
-        if (enemyPlayer.gameboard.areAllShipsSunk()) {
+        // if (currentPlayer.type === 'Computer') {
+        //     currentPlayer.makeRandomAttack(enemyPlayer);
+        // } else {
+        //     currentPlayer.attack(enemyPlayer, coordinate);
+        // }
+        // if (enemyPlayer.gameboard.areAllShipsSunk()) {
+        //     gameOver = true;
+        //     winner = currentPlayer;
+        // } else {
+        //     switchPlayer();
+        // }
+
+        // Player attacks
+        player1.attack(player2, coordinate);
+
+        if (player2.gameboard.areAllShipsSunk()) {
             gameOver = true;
-            winner = currentPlayer;
-        } else {
-            switchPlayer();
+            winner = player1;
+            return;
+        }
+
+        // Computer responds
+        player2.makeRandomAttack(player1);
+
+        if (player1.gameboard.areAllShipsSunk()) {
+            gameOver = true;
+            winner = player2;
         }
     };
 
@@ -71,6 +90,8 @@ const GameController = (() => {
         playTurn,
         isGameOver,
         getWinner,
+        getPlayer1,
+        getPlayer2,
     };
 })();
 

@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+
 import GameController from './gameController.js';
 
 const DomController = (() => {
@@ -18,8 +19,8 @@ const DomController = (() => {
         boardEl.innerHTML = '';
         boardEl.classList.add('grid');
 
-        for(let row = 0; row < 10; row++){
-            for(let col = 0; col < 10; col++){
+        for (let row = 0; row < 10; row++) {
+            for (let col = 0; col < 10; col++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.dataset.row = row;
@@ -32,14 +33,14 @@ const DomController = (() => {
     const renderBoards = () => {
         createEmptyBoard(playerBoardEl);
         createEmptyBoard(enemyBoardEl);
-    }
+    };
 
     const renderPlayerShips = () => {
-        const player = GameController.getCurrentPlayer();
+        const player = GameController.getPlayer1();
         const ships = player.gameboard.ships;
 
-        ships.forEach(({coordinates}) => {
-            coordinates.forEach(([row,col]) => {
+        ships.forEach(({ coordinates }) => {
+            coordinates.forEach(([row, col]) => {
                 const cell = playerBoardEl.querySelector(
                     `.cell[data-row="${row}"][data-col="${col}"]`
                 );
@@ -52,23 +53,75 @@ const DomController = (() => {
     };
 
     const renderStatusBar = () => {
-        const player = GameController.getCurrentPlayer();
-        const enemy = GameController.getEnemyPlayer();
+        const player = GameController.getPlayer1();
+        const enemy = GameController.getPlayer2();
         const playerAlive = player.gameboard.ships.filter(
-            ({ship}) => !ship.isSunk()
+            ({ ship }) => !ship.isSunk()
         ).length;
 
         const enemyAlive = enemy.gameboard.ships.filter(
-            ({ship}) => !ship.isSunk()
+            ({ ship }) => !ship.isSunk()
         ).length;
 
         statusBar.innerHTML = `
         <div>Your Ships: ${playerAlive}</div>
         <div>Enemy Ships: ${enemyAlive}</div>
-        `;  
+        `;
     };
 
+    const bindEnemyBoardEvents = () => {
+        enemyBoardEl.addEventListener('click', (e) => {
+            const cell = e.target;
 
+            if (!cell.classList.contains('cell')) return;
+
+            const row = Number(cell.dataset.row);
+            const col = Number(cell.dataset.col);
+
+            GameController.playTurn([row, col]);
+
+            renderBoards();
+
+            const player = GameController.getPlayer1();
+            const enemy = GameController.getPlayer2();
+
+            renderPlayerShips();
+            renderHits(enemyBoardEl, enemy.gameboard.ships);
+            renderMisses(enemyBoardEl, enemy.gameboard.missedShots);
+            renderHits(playerBoardEl, player.gameboard.ships);
+            renderMisses(playerBoardEl, player.gameboard.missedShots);
+
+            renderStatusBar();
+        });
+    };
+
+    const renderMisses = (boardEl, missedShots) => {
+        missedShots.forEach(([row, col]) => {
+            const cell = boardEl.querySelector(
+                `.cell[data-row="${row}"][data-col="${col}"]`
+            );
+            if (cell) {
+                cell.classList.add('miss');
+            }
+        });
+    };
+
+    const renderHits = (boardEl, ships) => {
+        ships.forEach(({ coordinates, ship }) => {
+            if (ship.hits === 0) return;
+
+            // For now: mark all ship cells as hit if ship has any hits
+            // This will be refined later when we track hit coordinates
+            coordinates.forEach(([row, col]) => {
+                const cell = boardEl.querySelector(
+                    `.cell[data-row="${row}"][data-col="${col}"]`
+                );
+                if (cell) {
+                    cell.classList.add('hit');
+                }
+            });
+        });
+    };
 
     const initUI = () => {
         GameController.initGame();
@@ -76,6 +129,7 @@ const DomController = (() => {
         renderBoards();
         renderPlayerShips();
         renderStatusBar();
+        bindEnemyBoardEvents();
     };
 
     return {

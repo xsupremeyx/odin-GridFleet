@@ -85,4 +85,62 @@ describe('Gameboard class tests', () => {
         gameboard.receiveAttack([1, 1]);
         expect(gameboard.areAllShipsSunk()).toBe(true);
     });
+    test('receiveAttack records a hit and returns "hit"', () => {
+        const gameboard = new Gameboard();
+        const ship = new Ship(3);
+
+        gameboard.placeShip(ship, [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+        ]);
+
+        const result = gameboard.receiveAttack([0, 1]);
+
+        expect(result).toBe('hit');
+        expect(ship.hits).toBe(1);
+    });
+
+    test('receiveAttack records a miss and returns "miss"', () => {
+        const gameboard = new Gameboard();
+        const ship = new Ship(3);
+
+        gameboard.placeShip(ship, [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+        ]);
+
+        const result = gameboard.receiveAttack([5, 5]);
+
+        expect(result).toBe('miss');
+        expect(gameboard.missedShots).toContainEqual([5, 5]);
+        expect(ship.hits).toBe(0);
+    });
+    test('receiveAttack returns "invalid" for duplicate miss', () => {
+        const gameboard = new Gameboard();
+
+        gameboard.receiveAttack([5, 5]);
+        const result = gameboard.receiveAttack([5, 5]);
+
+        expect(result).toBe('invalid');
+        expect(gameboard.missedShots.length).toBe(1);
+    });
+    test('receiveAttack returns "invalid" for duplicate hit', () => {
+        const gameboard = new Gameboard();
+        const ship = new Ship(3);
+
+        gameboard.placeShip(ship, [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+        ]);
+
+        const first = gameboard.receiveAttack([0, 1]);
+        const second = gameboard.receiveAttack([0, 1]);
+
+        expect(first).toBe('hit');
+        expect(second).toBe('invalid');
+        expect(ship.hits).toBe(1);
+    });
 });

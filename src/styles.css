@@ -24,3 +24,11 @@
 .ship {
     background-color: #7da7ff;
 }
+
+.hit {
+    background-color: crimson;
+}
+
+.miss {
+    background-color: #bbb;
+}
