@@ -58,7 +58,7 @@ const GameController = (() => {
         }
         if (enemyPlayer.gameboard.areAllShipsSunk()) {
             gameOver = true;
-            winner = currentPlayer.type;
+            winner = currentPlayer;
         } else {
             switchPlayer();
         }
