@@ -86,9 +86,11 @@ const DomController = (() => {
             const enemy = GameController.getPlayer2();
 
             renderPlayerShips();
-            renderHits(enemyBoardEl, enemy.gameboard.ships);
+
+            renderHits(enemyBoardEl, enemy.gameboard.hitShots);
             renderMisses(enemyBoardEl, enemy.gameboard.missedShots);
-            renderHits(playerBoardEl, player.gameboard.ships);
+
+            renderHits(playerBoardEl, player.gameboard.hitShots);
             renderMisses(playerBoardEl, player.gameboard.missedShots);
 
             renderStatusBar();
@@ -106,20 +108,14 @@ const DomController = (() => {
         });
     };
 
-    const renderHits = (boardEl, ships) => {
-        ships.forEach(({ coordinates, ship }) => {
-            if (ship.hits === 0) return;
-
-            // For now: mark all ship cells as hit if ship has any hits
-            // This will be refined later when we track hit coordinates
-            coordinates.forEach(([row, col]) => {
-                const cell = boardEl.querySelector(
-                    `.cell[data-row="${row}"][data-col="${col}"]`
-                );
-                if (cell) {
-                    cell.classList.add('hit');
-                }
-            });
+    const renderHits = (boardEl, hitShots) => {
+        hitShots.forEach(([row, col]) => {
+            const cell = boardEl.querySelector(
+                `.cell[data-row="${row}"][data-col="${col}"]`
+            );
+            if (cell) {
+                cell.classList.add('hit');
+            }
         });
     };
 

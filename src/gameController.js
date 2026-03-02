@@ -53,20 +53,10 @@ const GameController = (() => {
     // };
 
     const playTurn = (coordinate) => {
-        // if (currentPlayer.type === 'Computer') {
-        //     currentPlayer.makeRandomAttack(enemyPlayer);
-        // } else {
-        //     currentPlayer.attack(enemyPlayer, coordinate);
-        // }
-        // if (enemyPlayer.gameboard.areAllShipsSunk()) {
-        //     gameOver = true;
-        //     winner = currentPlayer;
-        // } else {
-        //     switchPlayer();
-        // }
+        if (gameOver) return;
 
-        // Player attacks
-        player1.attack(player2, coordinate);
+        const playerResult = player1.attack(player2, coordinate);
+        if (playerResult === 'invalid') return;
 
         if (player2.gameboard.areAllShipsSunk()) {
             gameOver = true;
@@ -74,7 +64,6 @@ const GameController = (() => {
             return;
         }
 
-        // Computer responds
         player2.makeRandomAttack(player1);
 
         if (player1.gameboard.areAllShipsSunk()) {

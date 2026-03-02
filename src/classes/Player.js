@@ -8,7 +8,7 @@ export class Player {
     }
 
     attack = (opponent, coordinate) => {
-        opponent.gameboard.receiveAttack(coordinate);
+        return opponent.gameboard.receiveAttack(coordinate);
     };
 
     makeRandomAttack = (opponent) => {
