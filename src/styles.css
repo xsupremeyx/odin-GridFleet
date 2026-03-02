@@ -32,3 +32,32 @@
 .miss {
     background-color: #bbb;
 }
+
+#enemy-board .cell {
+    cursor: pointer;
+}
+
+#enemy-board .cell.hit,
+#enemy-board .cell.miss {
+    cursor: not-allowed;
+}
+
+#enemy-board .cell:hover:not(.hit):not(.miss) {
+    outline: 1px solid #666;
+}
+
+.endgame-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 8px;
+}

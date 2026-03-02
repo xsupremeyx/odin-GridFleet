@@ -71,9 +71,15 @@ const DomController = (() => {
 
     const bindEnemyBoardEvents = () => {
         enemyBoardEl.addEventListener('click', (e) => {
+            if (GameController.isGameOver()) return;
             const cell = e.target;
-
-            if (!cell.classList.contains('cell')) return;
+            if (
+                !cell.classList.contains('cell') ||
+                cell.classList.contains('hit') ||
+                cell.classList.contains('miss')
+            ) {
+                return;
+            }
 
             const row = Number(cell.dataset.row);
             const col = Number(cell.dataset.col);
@@ -94,7 +100,39 @@ const DomController = (() => {
             renderMisses(playerBoardEl, player.gameboard.missedShots);
 
             renderStatusBar();
+            renderStatusBar();
+
+            if (GameController.isGameOver()) {
+                showEndgameModal();
+            }
         });
+    };
+
+    const showEndgameModal = () => {
+        const winner = GameController.getWinner();
+        const modal = document.createElement('div');
+        modal.classList.add('endgame-modal');
+
+        modal.innerHTML = `
+        <div class="modal-content">
+            <h2>${winner.type === 'Player1' ? 'You Win! 🎉' : 'You Lose 😞'}</h2>
+            <button id="restart-game">Play Again</button>
+        </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.querySelector('#restart-game').addEventListener('click',() => {
+            modal.remove();
+            resetGame();
+        });
+    };
+
+    const resetGame = () => {
+        GameController.initGame();
+        renderBoards();
+        renderPlayerShips();
+        renderStatusBar();
     };
 
     const renderMisses = (boardEl, missedShots) => {
