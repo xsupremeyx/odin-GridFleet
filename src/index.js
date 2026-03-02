@@ -1,2 +1,7 @@
 import './styles.css';
-console.log('Webpack template loaded!');
+
+import DomController from './domController.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    DomController.initUI();
+});

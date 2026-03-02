@@ -1,0 +1,26 @@
+#game-container {
+    display: flex;
+    gap: 50px;
+}
+
+#status-bar {
+    margin-bottom: 20px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+    gap: 2px;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+}
+
+.ship {
+    background-color: #7da7ff;
+}
