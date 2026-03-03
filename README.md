@@ -7,13 +7,19 @@ JavaScript project** for **The Odin Project**.\
 It demonstrates modular architecture, state management, clean UI
 rendering, and disciplined Git workflow.
 
-
-------------------------------------------------------------------------
+---
 
 ## Live Demo:
+
 [https://xsupremeyx.github.io/odin-GridFleet/](https://xsupremeyx.github.io/odin-GridFleet/)
 
-------------------------------------------------------------------------
+---
+
+## 🎓 Version 1.0.1 Changes
+- Added all possible ships to be placed on the board
+- Added Ship name display while placing ships.
+---
+
 
 ## 🎓 Built For
 
@@ -24,44 +30,44 @@ Final JavaScript Project
 
 It focuses on applying:
 
--   Test-driven design principles
--   Object-oriented programming
--   Modular architecture
--   Separation of concerns
--   Clean UI architecture
+- Test-driven design principles
+- Object-oriented programming
+- Modular architecture
+- Separation of concerns
+- Clean UI architecture
 
-------------------------------------------------------------------------
+---
 
 ## 🚀 Features
 
--   🎮 Player vs Player mode
--   🤖 Player vs Computer mode
--   🔁 Turn-based perspective switching
--   🚢 Ship placement with rotation
--   💥 Hit / Miss feedback
--   🏴 Sunk ship detection
--   🎨 Fully custom UI (no frameworks)
--   📱 Responsive layout
--   🧩 Clean branch-based Git workflow
--   🏷 Versioned release (v1.0.0)
+- 🎮 Player vs Player mode
+- 🤖 Player vs Computer mode
+- 🔁 Turn-based perspective switching
+- 🚢 Ship placement with rotation
+- 💥 Hit / Miss feedback
+- 🏴 Sunk ship detection
+- 🎨 Fully custom UI (no frameworks)
+- 📱 Responsive layout
+- 🧩 Clean branch-based Git workflow
+- 🏷 Versioned release (v1.0.1)
 
-------------------------------------------------------------------------
+---
 
 ## 🛠 Tech Stack
 
--   HTML5
--   CSS3 (Custom properties + animations)
--   Vanilla JavaScript (ES Modules)
--   Jest (for unit testing TDD)
--   Modular and Object Oriented Class architecture pattern
--   Git (feature branch workflow)
--   Webpack (for bundling and development server)
--   Linting with ESLint
--   Formatting with Prettier
+- HTML5
+- CSS3 (Custom properties + animations)
+- Vanilla JavaScript (ES Modules)
+- Jest (for unit testing TDD)
+- Modular and Object Oriented Class architecture pattern
+- Git (feature branch workflow)
+- Webpack (for bundling and development server)
+- Linting with ESLint
+- Formatting with Prettier
 
 No external libraries used.
 
-------------------------------------------------------------------------
+---
 
 ## 🧠 Architecture Overview
 
@@ -76,16 +82,16 @@ Ship
 
 ### Responsibilities
 
--   **GameController** → Core game logic & state management\
--   **Player** → Attack logic and turn handling\
--   **Gameboard** → Ship placement, hit tracking, win detection\
--   **Ship** → Individual ship state (hits, sunk detection)\
--   **DomController** → UI rendering and DOM interaction
+- **GameController** → Core game logic & state management\
+- **Player** → Attack logic and turn handling\
+- **Gameboard** → Ship placement, hit tracking, win detection\
+- **Ship** → Individual ship state (hits, sunk detection)\
+- **DomController** → UI rendering and DOM interaction
 
 This separation keeps logic independent from UI and makes the codebase
 maintainable.
 
-------------------------------------------------------------------------
+---
 
 ## 🎯 Gameplay Flow
 
@@ -97,7 +103,7 @@ maintainable.
 6.  Winner screen displayed
 7.  Restart option available
 
-------------------------------------------------------------------------
+---
 
 ## 📂 Project Structure
 
@@ -111,8 +117,7 @@ src/\
 ├── index.js\
 └── styles.css
 
-(Not including the test files here)
-------------------------------------------------------------------------
+## (Not including the test files here)
 
 ## 🧪 Running Locally
 
@@ -126,15 +131,14 @@ Then visit:
 
 http://localhost:8080
 
-------------------------------------------------------------------------
+---
 
 ## Version
 
 **v1.0.0**\
 Stable release with PvP + PvC modes and polished UI.
 
-------------------------------------------------------------------------
-
+---
 
 ## 📜 License
 

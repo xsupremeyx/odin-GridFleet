@@ -369,6 +369,11 @@ body::before {
     font-weight: 600;
 }
 
+.status-left strong {
+    color: var(--primary);
+    letter-spacing: 1px;
+}
+
 .status-center {
     min-width: 80px;
     text-align: center;

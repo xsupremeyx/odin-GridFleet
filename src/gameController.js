@@ -42,7 +42,7 @@ const GameController = (() => {
     };
 
     const placeComputerShips = () => {
-        const shipSizes = [3, 2];
+        const shipSizes = [5, 4, 3, 3, 2];
 
         shipSizes.forEach((length) => {
             let placed = false;
@@ -72,7 +72,13 @@ const GameController = (() => {
 
     const initGame = (mode) => {
         isHorizontal = true;
-        shipsToPlace = [3, 2]; // Example ship lengths for placement phase
+        shipsToPlace = [
+            { name: 'Carrier', length: 5 },
+            { name: 'Battleship', length: 4 },
+            { name: 'Cruiser', length: 3 },
+            { name: 'Submarine', length: 3 },
+            { name: 'Destroyer', length: 2 },
+        ];
         gameOver = false;
         winner = null;
         phase = 'placement-p1';
@@ -94,7 +100,11 @@ const GameController = (() => {
     const getPlayer2 = () => player2;
     const getPhase = () => phase;
     const getShipsToPlace = () => shipsToPlace;
-    const getCurrentShipLength = () => shipsToPlace[0];
+    const getCurrentShipLength = () =>
+        shipsToPlace.length ? shipsToPlace[0].length : null;
+
+    const getCurrentShipName = () =>
+        shipsToPlace.length ? shipsToPlace[0].name : null;
     const getOrientation = () => isHorizontal;
     const getGameMode = () => gameMode;
 
@@ -126,7 +136,7 @@ const GameController = (() => {
         if (!phase.startsWith('placement')) return false;
         if (shipsToPlace.length === 0) return false;
 
-        const length = shipsToPlace[0];
+        const { length } = shipsToPlace[0];
 
         const coordinates = generateCoordinates(row, col, length, isHorizontal);
 
@@ -143,7 +153,13 @@ const GameController = (() => {
                 if (phase === 'placement-p1') {
                     // Switch to Player 2 placement
                     phase = 'placement-p2';
-                    shipsToPlace = [3, 2];
+                    shipsToPlace = [
+                        { name: 'Carrier', length: 5 },
+                        { name: 'Battleship', length: 4 },
+                        { name: 'Cruiser', length: 3 },
+                        { name: 'Submarine', length: 3 },
+                        { name: 'Destroyer', length: 2 },
+                    ];
 
                     currentPlayer = player2;
                     enemyPlayer = player1;
@@ -185,6 +201,7 @@ const GameController = (() => {
         switchTurn,
         getGameMode,
         setWinner,
+        getCurrentShipName,
     };
 })();
 

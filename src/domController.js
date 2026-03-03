@@ -106,9 +106,17 @@ const DomController = (() => {
 
     const renderPlacementStatus = () => {
         const shipsLeft = GameController.getShipsToPlace();
+        const currentShip = GameController.getCurrentShipName();
+
+        if (!currentShip) return;
 
         statusBar.innerHTML = `
-            <div>Ships Left To Place: ${shipsLeft.length}</div>
+            <div class="status-left">
+                Placing: <strong>${currentShip}</strong>
+            </div>
+            <div class="status-right">
+                Ships Remaining: ${shipsLeft.length}
+            </div>
         `;
     };
 
