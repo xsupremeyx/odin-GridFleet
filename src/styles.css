@@ -35,6 +35,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: radial-gradient(circle at top left, #0f172a, #0b1220 60%);
 }
 
 /* HERO SCREEN */
@@ -122,6 +125,11 @@ body {
     background: #334155;
 }
 
+#enemy-board .cell:hover:not(.hit):not(.miss) {
+    background: rgba(59, 130, 246, 0.25);
+    transform: scale(1.05);
+}
+
 /* Ship + Hit + Miss States */
 
 #rotate-ship {
@@ -188,7 +196,7 @@ body {
 }
 
 .miss {
-    background: #475569;
+    background: rgba(148, 163, 184, 0.25);
     position: relative;
     overflow: hidden;
 }
@@ -196,24 +204,29 @@ body {
 .miss::after {
     content: '';
     position: absolute;
-    width: 8px;
-    height: 8px;
-    background: white;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: ripple 0.5s ease;
+    animation: ripple 0.6s ease-out;
 }
 
 @keyframes ripple {
-    from {
+    0% {
         transform: translate(-50%, -50%) scale(0.5);
         opacity: 1;
     }
 
-    to {
-        transform: translate(-50%, -50%) scale(2);
+    70% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(4);
         opacity: 0;
     }
 }
@@ -287,6 +300,15 @@ body {
     color: var(--primary);
 }
 
+#status-bar {
+    gap: 1rem;
+}
+
+.status-center {
+    min-width: 80px;
+    text-align: center;
+}
+
 .status-right {
     color: var(--muted);
 }
@@ -313,6 +335,13 @@ body {
 }
 
 .modal-content h2 {
+    margin-bottom: 1rem;
+}
+
+.placement-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1rem;
 }
 
@@ -373,8 +402,8 @@ body {
 .battle-layout {
     display: flex;
     justify-content: center;
-    gap: 4rem;
-    flex-wrap: wrap;
+    gap: 5rem;
+    flex-wrap: nowrap;
 }
 
 .board-container {
@@ -392,14 +421,24 @@ body {
 }
 
 .board-container h2 {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
     font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 1.1rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
 }
 
 @media (min-width: 1200px) {
     .battle-layout {
         gap: 6rem;
+    }
+}
+@media (max-width: 900px) {
+    .battle-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 3rem;
     }
 }
 
@@ -421,4 +460,69 @@ body {
         transform: scale(1);
         opacity: 1;
     }
+}
+
+.sunk {
+    background: #111827 !important;
+    border-color: #111827 !important;
+    animation: sinkFade 0.4s ease;
+}
+
+@keyframes sinkFade {
+    from {
+        filter: brightness(1.5);
+    }
+
+    to {
+        filter: brightness(0.6);
+    }
+}
+
+.board-container {
+    animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (min-width: 1200px) {
+    :root {
+        --grid-size: 40px;
+    }
+}
+
+body {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(59, 130, 246, 0.15),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(59, 130, 246, 0.08),
+            transparent 40%
+        ),
+        var(--bg-main);
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: -1;
 }

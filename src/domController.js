@@ -516,12 +516,17 @@ const DomController = (() => {
         enemyBoardEl.classList.add('active');
 
         // LEFT BOARD → Your Fleet (current player)
-        current.gameboard.ships.forEach(({ coordinates }) => {
+        current.gameboard.ships.forEach(({ coordinates, ship }) => {
             coordinates.forEach(([row, col]) => {
                 const cell = playerBoardEl.querySelector(
                     `.cell[data-row="${row}"][data-col="${col}"]`
                 );
-                if (cell) cell.classList.add('ship');
+                if (cell) {
+                    cell.classList.add('ship');
+                    if (ship.isSunk()) {
+                        cell.classList.add('sunk');
+                    }
+                }
             });
         });
 
