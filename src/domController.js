@@ -106,7 +106,7 @@ const DomController = (() => {
             <main class="battle-screen">
                 <header id="status-bar"></header>
 
-                <section class="boards-wrapper">
+                <section class="boards-wrapper battle-layout">
                     <div class="board-container">
                         <h2>Your Fleet</h2>
                         <div id="player-board" class="board"></div>
