@@ -424,7 +424,7 @@ const DomController = (() => {
 
                 renderPlayerBoard();
                 renderPlayerShips();
-                renderStatusBar();
+                renderPlacementStatus();
             }
         });
     };

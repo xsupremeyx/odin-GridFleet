@@ -190,8 +190,24 @@ body {
 
 /* Ship + Hit + Miss States */
 
+#rotate-ship {
+    padding: 0.6rem 1.4rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: 500;
+}
+
+#rotate-ship:hover {
+    background: var(--primary);
+}
+
 #rotate-ship.active {
     background: var(--primary);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
 }
 
 .ship {
