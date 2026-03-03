@@ -224,16 +224,50 @@ body {
     filter: brightness(1.1);
 }
 
+/* Turn switching */
+.turn-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.turn-box {
+    background: var(--bg-panel);
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.turn-box button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.5rem;
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    cursor: pointer;
+}
+
+.board.disabled {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
 /* Endgame Modal */
 
 .endgame-modal {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 999;
+    backdrop-filter: blur(4px);
 }
 
 .modal-content {

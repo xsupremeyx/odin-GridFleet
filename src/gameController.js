@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import { Player } from './classes/Player.js';
 import { Ship } from './classes/Ship.js';
 
@@ -76,7 +75,7 @@ const GameController = (() => {
         shipsToPlace = [3, 2]; // Example ship lengths for placement phase
         gameOver = false;
         winner = null;
-        phase = 'placement';
+        phase = 'placement-p1';
         gameMode = mode;
 
         player1 = new Player('Player1');
@@ -97,40 +96,31 @@ const GameController = (() => {
     const getShipsToPlace = () => shipsToPlace;
     const getCurrentShipLength = () => shipsToPlace[0];
     const getOrientation = () => isHorizontal;
-
-    const startBattlePhase = () => {
-        phase = 'battle';
-    };
+    const getGameMode = () => gameMode;
 
     const playTurn = (coordinate) => {
         if (gameOver || phase !== 'battle') return;
 
         const result = currentPlayer.attack(enemyPlayer, coordinate);
 
-        if (result.result === 'invalid') return;
+        if (!result || result.result === 'invalid') return;
 
         if (enemyPlayer.gameboard.areAllShipsSunk()) {
             gameOver = true;
             winner = currentPlayer;
-            return;
         }
+    };
+    const setWinner = (player) => {
+        winner = player;
+        gameOver = true;
+    };
 
-        if (gameMode === 'pvc') {
-            // Computer automatically plays
-            enemyPlayer.makeRandomAttack(currentPlayer);
-
-            if (currentPlayer.gameboard.areAllShipsSunk()) {
-                gameOver = true;
-                winner = enemyPlayer;
-            }
-        } else {
-            // PvP mode → swap players
-            [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
-        }
+    const switchTurn = () => {
+        [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
     };
 
     const placePlayerShip = (row, col) => {
-        if (phase !== 'placement') return false;
+        if (!phase.startsWith('placement')) return false;
         if (shipsToPlace.length === 0) return false;
 
         const length = shipsToPlace[0];
@@ -139,15 +129,34 @@ const GameController = (() => {
 
         if (!coordinates) return false;
 
-        if (!canPlaceShip(player1, coordinates)) return false;
+        if (!canPlaceShip(currentPlayer, coordinates)) return false;
 
-        player1.gameboard.placeShip(new Ship(length), coordinates);
+        currentPlayer.gameboard.placeShip(new Ship(length), coordinates);
 
         shipsToPlace.shift();
 
         if (shipsToPlace.length === 0) {
-            startBattlePhase();
-            placeComputerShips();
+            if (gameMode === 'pvp') {
+                if (phase === 'placement-p1') {
+                    // Switch to Player 2 placement
+                    phase = 'placement-p2';
+                    shipsToPlace = [3, 2];
+
+                    currentPlayer = player2;
+                    enemyPlayer = player1;
+
+                    isHorizontal = true; // reset orientation
+                } else {
+                    // Both players placed → battle begins
+                    phase = 'battle';
+                    currentPlayer = player1;
+                    enemyPlayer = player2;
+                }
+            } else {
+                // PVC
+                phase = 'battle';
+                placeComputerShips();
+            }
         }
 
         return true;
@@ -163,7 +172,6 @@ const GameController = (() => {
         getPlayer1,
         getPlayer2,
         getPhase,
-        startBattlePhase,
         getShipsToPlace,
         placePlayerShip,
         toggleRotation,
@@ -171,6 +179,9 @@ const GameController = (() => {
         canPlaceShip,
         getCurrentShipLength,
         getOrientation,
+        switchTurn,
+        getGameMode,
+        setWinner,
     };
 })();
 

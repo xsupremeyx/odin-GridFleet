@@ -7,6 +7,7 @@ const DomController = (() => {
     let statusBar;
     let playerBoardEl;
     let enemyBoardEl;
+    let isProcessingTurn = false;
 
     const cacheDom = () => {
         app = document.querySelector('#app');
@@ -169,7 +170,7 @@ const DomController = (() => {
     };
 
     const renderPlayerShips = () => {
-        const player = GameController.getPlayer1();
+        const player = GameController.getCurrentPlayer();
         const ships = player.gameboard.ships;
 
         ships.forEach(({ coordinates }) => {
@@ -182,30 +183,13 @@ const DomController = (() => {
                 }
             });
         });
-        console.log('Player ships rendered');
-    };
-
-    const renderEnemyShipsForDebug = () => {
-        const enemy = GameController.getPlayer2();
-
-        enemy.gameboard.ships.forEach(({ coordinates }) => {
-            coordinates.forEach(([row, col]) => {
-                const cell = enemyBoardEl.querySelector(
-                    `.cell[data-row="${row}"][data-col="${col}"]`
-                );
-
-                if (cell) {
-                    cell.classList.add('ship');
-                    cell.style.opacity = '0.4'; // visually distinguish from player ships
-                }
-            });
-        });
     };
 
     const renderStatusBar = () => {
-        const player = GameController.getPlayer1();
-        const enemy = GameController.getPlayer2();
-        const playerAlive = player.gameboard.ships.filter(
+        const current = GameController.getCurrentPlayer();
+        const enemy = GameController.getEnemyPlayer();
+
+        const currentAlive = current.gameboard.ships.filter(
             ({ ship }) => !ship.isSunk()
         ).length;
 
@@ -214,60 +198,142 @@ const DomController = (() => {
         ).length;
 
         statusBar.innerHTML = `
-        <div>Your Ships: ${playerAlive}</div>
-        <div>Enemy Ships: ${enemyAlive}</div>
+            <div>Your Ships: ${currentAlive}</div>
+            <div>Enemy Ships: ${enemyAlive}</div>
         `;
     };
 
-    const bindEnemyBoardEvents = () => {
-        enemyBoardEl.addEventListener('click', (e) => {
-            if (GameController.isGameOver()) return;
-            const cell = e.target;
-            if (
-                !cell.classList.contains('cell') ||
-                cell.classList.contains('hit') ||
-                cell.classList.contains('miss')
-            ) {
-                return;
-            }
+    const bindBattleEvents = () => {
+        // Remove previous handlers
+        playerBoardEl.onclick = null;
+        enemyBoardEl.onclick = null;
+        if (GameController.getPhase() !== 'battle') return;
+        enemyBoardEl.onclick = handleBattleClick;
+    };
 
-            const row = Number(cell.dataset.row);
-            const col = Number(cell.dataset.col);
+    const handleBattleClick = (e) => {
+        if (isProcessingTurn) return;
+        if (GameController.isGameOver()) return;
 
-            GameController.playTurn([row, col]);
+        const cell = e.target;
 
-            renderBattleBoards();
+        if (
+            !cell.classList.contains('cell') ||
+            cell.classList.contains('hit') ||
+            cell.classList.contains('miss')
+        )
+            return;
 
-            const player = GameController.getPlayer1();
-            const enemy = GameController.getPlayer2();
+        const row = Number(cell.dataset.row);
+        const col = Number(cell.dataset.col);
 
-            renderPlayerShips();
+        isProcessingTurn = true;
+        GameController.playTurn([row, col]);
 
-            renderHits(enemyBoardEl, enemy.gameboard.hitShots);
-            renderMisses(enemyBoardEl, enemy.gameboard.missedShots);
+        renderBattleSetup();
 
-            renderHits(playerBoardEl, player.gameboard.hitShots);
-            renderMisses(playerBoardEl, player.gameboard.missedShots);
+        if (GameController.isGameOver()) {
+            isProcessingTurn = false;
+            showEndgameModal();
+            return;
+        }
 
-            renderStatusBar();
+        // PVC MODE
+        if (GameController.getGameMode() === 'pvc') {
+            enemyBoardEl.classList.add('disabled');
 
-            if (GameController.isGameOver()) {
-                showEndgameModal();
-            }
-        });
+            setTimeout(() => {
+                // Switch to computer
+                GameController.switchTurn();
+
+                // Computer attacks
+                GameController.getCurrentPlayer().makeRandomAttack(
+                    GameController.getEnemyPlayer()
+                );
+
+                // Check if human lost
+                if (
+                    GameController.getEnemyPlayer().gameboard.areAllShipsSunk()
+                ) {
+                    GameController.setWinner(GameController.getCurrentPlayer());
+                    renderBattleSetup();
+
+                    isProcessingTurn = false;
+                    enemyBoardEl.classList.remove('disabled');
+
+                    showEndgameModal();
+                    return;
+                }
+
+                // Switch back to human
+                GameController.switchTurn();
+
+                renderBattleSetup();
+
+                isProcessingTurn = false;
+                enemyBoardEl.classList.remove('disabled');
+            }, 800);
+
+            return;
+        }
+        // 🔥 PvP MODE
+        setTimeout(() => {
+            showTurnOverlay();
+        }, 900);
+    };
+
+    const showTurnOverlay = () => {
+        const current = GameController.getCurrentPlayer();
+        const nextPlayer =
+            current.type === 'Player1'
+                ? GameController.getPlayer2()
+                : GameController.getPlayer1();
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('turn-overlay');
+
+        overlay.innerHTML = `
+            <div class="turn-box">
+                <h2>${nextPlayer.type}'s Turn</h2>
+                <button id="continue-turn">Continue</button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        document
+            .querySelector('#continue-turn')
+            .addEventListener('click', () => {
+                overlay.remove();
+
+                GameController.switchTurn(); // NOW swap
+                renderBattleSetup(); // Render new perspective
+                isProcessingTurn = false;
+            });
     };
 
     const showEndgameModal = () => {
         const winner = GameController.getWinner();
+        const mode = GameController.getGameMode();
+
+        let message;
+
+        if (mode === 'pvc') {
+            message =
+                winner.type === 'Player1' ? 'You Win! 🎉' : 'Computer Wins 🤖';
+        } else {
+            message = `${winner.type} Wins! 🎉`;
+        }
+
         const modal = document.createElement('div');
         modal.classList.add('endgame-modal');
 
         modal.innerHTML = `
         <div class="modal-content">
-            <h2>${winner.type === 'Player1' ? 'You Win! 🎉' : 'You Lose 😞'}</h2>
+            <h2>${message}</h2>
             <button id="restart-game">Play Again</button>
         </div>
-        `;
+    `;
 
         document.body.appendChild(modal);
 
@@ -306,7 +372,7 @@ const DomController = (() => {
 
     const bindPlayerBoardPlacement = () => {
         playerBoardEl.addEventListener('click', (e) => {
-            if (GameController.getPhase() !== 'placement') return;
+            if (!GameController.getPhase().startsWith('placement')) return;
 
             const cell = e.target;
             if (!cell.classList.contains('cell')) return;
@@ -314,15 +380,28 @@ const DomController = (() => {
             const row = Number(cell.dataset.row);
             const col = Number(cell.dataset.col);
 
+            const previousPhase = GameController.getPhase();
             const placed = GameController.placePlayerShip(row, col);
+
             if (placed) {
-                if (GameController.getPhase() === 'battle') {
+                const newPhase = GameController.getPhase();
+
+                if (
+                    previousPhase === 'placement-p1' &&
+                    newPhase === 'placement-p2'
+                ) {
+                    transitionTo(renderPlacementScreen, renderPlacementSetup);
+                    return;
+                }
+
+                if (newPhase === 'battle') {
                     transitionTo(renderBattleScreen, renderBattleSetup);
                     return;
                 }
+
                 renderPlayerBoard();
                 renderPlayerShips();
-                renderPlacementStatus();
+                renderStatusBar();
             }
         });
     };
@@ -333,7 +412,7 @@ const DomController = (() => {
     };
 
     const handlePreview = (e) => {
-        if (GameController.getPhase() !== 'placement') return;
+        if (!GameController.getPhase().startsWith('placement')) return;
 
         const cell = e.target;
         if (!cell.classList.contains('cell')) return;
@@ -371,7 +450,7 @@ const DomController = (() => {
         }
 
         const valid = GameController.canPlaceShip(
-            GameController.getPlayer1(),
+            GameController.getCurrentPlayer(),
             coords
         );
 
@@ -404,12 +483,30 @@ const DomController = (() => {
 
     const renderBattleSetup = () => {
         renderBattleBoards();
-        renderPlayerShips();
-        renderStatusBar();
-        bindEnemyBoardEvents();
 
-        // For debugging: show enemy ships
-        renderEnemyShipsForDebug();
+        const current = GameController.getCurrentPlayer();
+        const enemy = GameController.getEnemyPlayer();
+
+        // LEFT BOARD → Your Fleet (current player)
+        current.gameboard.ships.forEach(({ coordinates }) => {
+            coordinates.forEach(([row, col]) => {
+                const cell = playerBoardEl.querySelector(
+                    `.cell[data-row="${row}"][data-col="${col}"]`
+                );
+                if (cell) cell.classList.add('ship');
+            });
+        });
+
+        // Enemy shots on current player
+        renderHits(playerBoardEl, current.gameboard.hitShots);
+        renderMisses(playerBoardEl, current.gameboard.missedShots);
+
+        // RIGHT BOARD → Enemy Waters (shot history of current player)
+        renderHits(enemyBoardEl, enemy.gameboard.hitShots);
+        renderMisses(enemyBoardEl, enemy.gameboard.missedShots);
+
+        renderStatusBar();
+        bindBattleEvents();
     };
 
     const initUI = () => {
