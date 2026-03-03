@@ -11,6 +11,7 @@ const GameController = (() => {
     let winner;
     let phase;
     let shipsToPlace;
+    let gameMode;
 
     const placeComputerShips = () => {
         enemyPlayer.gameboard.placeShip(new Ship(3), [
@@ -24,14 +25,15 @@ const GameController = (() => {
         ]);
     };
 
-    const initGame = () => {
+    const initGame = (mode) => {
         shipsToPlace = [3, 2]; // Example ship lengths for placement phase
         gameOver = false;
         winner = null;
         phase = 'placement';
+        gameMode = mode;
 
         player1 = new Player('Player1');
-        player2 = new Player('Computer');
+        player2 = new Player(mode === 'pvp' ? 'Player2' : 'Computer');
         currentPlayer = player1;
         enemyPlayer = player2;
 
@@ -51,23 +53,50 @@ const GameController = (() => {
         phase = 'battle';
     };
 
+    // const playTurn = (coordinate) => {
+    //     if (gameOver || phase !== 'battle') return;
+
+    //     const playerResult = player1.attack(player2, coordinate);
+    //     if (playerResult.result === 'invalid') return;
+
+    //     if (player2.gameboard.areAllShipsSunk()) {
+    //         gameOver = true;
+    //         winner = player1;
+    //         return;
+    //     }
+
+    //     player2.makeRandomAttack(player1);
+
+    //     if (player1.gameboard.areAllShipsSunk()) {
+    //         gameOver = true;
+    //         winner = player2;
+    //     }
+    // };
+
     const playTurn = (coordinate) => {
         if (gameOver || phase !== 'battle') return;
 
-        const playerResult = player1.attack(player2, coordinate);
-        if (playerResult.result === 'invalid') return;
+        const result = currentPlayer.attack(enemyPlayer, coordinate);
 
-        if (player2.gameboard.areAllShipsSunk()) {
+        if (result.result === 'invalid') return;
+
+        if (enemyPlayer.gameboard.areAllShipsSunk()) {
             gameOver = true;
-            winner = player1;
+            winner = currentPlayer;
             return;
         }
 
-        player2.makeRandomAttack(player1);
+        if (gameMode === 'pvc') {
+            // Computer automatically plays
+            enemyPlayer.makeRandomAttack(currentPlayer);
 
-        if (player1.gameboard.areAllShipsSunk()) {
-            gameOver = true;
-            winner = player2;
+            if (currentPlayer.gameboard.areAllShipsSunk()) {
+                gameOver = true;
+                winner = enemyPlayer;
+            }
+        } else {
+            // PvP mode → swap players
+            [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
         }
     };
 
