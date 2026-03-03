@@ -315,22 +315,19 @@ body::before {
 }
 
 .miss {
-    background: rgba(148, 163, 184, 0.25);
+    background: rgba(148, 163, 184, 0.35);
+    border-color: rgba(148, 163, 184, 0.6);
     position: relative;
-    overflow: hidden;
 }
 
 .miss::after {
-    content: '';
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: ripple 0.6s ease-out;
+    content: '•';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
 }
 
 .preview-valid {
@@ -489,23 +486,6 @@ body::before {
 
     100% {
         transform: scale(1);
-    }
-}
-
-@keyframes ripple {
-    0% {
-        transform: translate(-50%, -50%) scale(0.5);
-        opacity: 1;
-    }
-
-    70% {
-        transform: translate(-50%, -50%) scale(3);
-        opacity: 0.5;
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(4);
-        opacity: 0;
     }
 }
 
