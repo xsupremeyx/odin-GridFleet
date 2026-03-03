@@ -76,12 +76,21 @@ const DomController = (() => {
     };
 
     const renderPlacementSetup = () => {
-        console.log("Placement setup running");
-        console.log(playerBoardEl);
+        bindRotateButton();
         renderPlayerBoard();
         renderPlayerShips();
         renderPlacementStatus();
         bindPlayerBoardPlacement();
+        bindPlacementHover();
+    };
+
+    const bindRotateButton = () => {
+        const rotateBtn = document.querySelector('#rotate-ship');
+
+        rotateBtn.addEventListener('click', () => {
+            GameController.toggleRotation();
+            rotateBtn.classList.toggle('active');
+        });
     };
 
     const renderPlacementStatus = () => {
@@ -315,6 +324,81 @@ const DomController = (() => {
                 renderPlayerShips();
                 renderPlacementStatus();
             }
+        });
+    };
+
+    const bindPlacementHover = () => {
+        playerBoardEl.addEventListener('mouseover', handlePreview);
+        playerBoardEl.addEventListener('mouseout', clearPreview);
+    };
+
+    const handlePreview = (e) => {
+        if (GameController.getPhase() !== 'placement') return;
+
+        const cell = e.target;
+        if (!cell.classList.contains('cell')) return;
+
+        clearPreview();
+
+        const row = Number(cell.dataset.row);
+        const col = Number(cell.dataset.col);
+
+        const length = GameController.getCurrentShipLength();
+        if (!length) return;
+
+        const isHorizontal = GameController.getOrientation();
+
+        const coords = GameController.generateCoordinates(
+            row,
+            col,
+            length,
+            isHorizontal
+        );
+
+        if (!coords) {
+            // Show invalid preview for attempted cells
+            const fallbackCoords = [];
+
+            for (let i = 0; i < length; i++) {
+                const r = isHorizontal ? row : row + i;
+                const c = isHorizontal ? col + i : col;
+
+                fallbackCoords.push([r, c]);
+            }
+
+            applyPreview(fallbackCoords, false);
+            return;
+        }
+
+        const valid = GameController.canPlaceShip(
+            GameController.getPlayer1(),
+            coords
+        );
+
+        applyPreview(coords, valid);
+    };
+
+    const applyPreview = (coords, isValid) => {
+        coords.forEach(([r, c]) => {
+            const cell = playerBoardEl.querySelector(
+                `.cell[data-row="${r}"][data-col="${c}"]`
+            );
+
+            if (cell) {
+                cell.classList.add(
+                    isValid ? 'preview-valid' : 'preview-invalid'
+                );
+            }
+        });
+    };
+
+    const clearPreview = () => {
+        const cells = playerBoardEl.querySelectorAll(
+            '.preview-valid, .preview-invalid'
+        );
+
+        cells.forEach((cell) => {
+            cell.classList.remove('preview-valid', 'preview-invalid');
         });
     };
 

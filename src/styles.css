@@ -178,11 +178,15 @@ body {
     transition: 0.15s ease;
 }
 
-.cell:hover {
+.cell:hover:not(.preview-valid):not(.preview-invalid) {
     background: #334155;
 }
 
 /* Ship + Hit + Miss States */
+
+#rotate-ship.active {
+    background: var(--primary);
+}
 
 .ship {
     background: var(--primary);
@@ -198,13 +202,26 @@ body {
 }
 
 .hit::after {
-    content: "✕";
+    content: '✕';
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
     height: 100%;
+}
+
+.preview-valid {
+    background: rgba(59, 130, 246, 0.4);
+}
+
+.preview-invalid {
+    background: rgba(239, 68, 68, 0.4);
+}
+
+.preview-valid:hover,
+.preview-invalid:hover {
+    filter: brightness(1.1);
 }
 
 /* Endgame Modal */
