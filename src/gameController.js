@@ -14,15 +14,46 @@ const GameController = (() => {
     let gameMode;
 
     const placeComputerShips = () => {
-        enemyPlayer.gameboard.placeShip(new Ship(3), [
-            [5, 5],
-            [5, 6],
-            [5, 7],
-        ]);
-        enemyPlayer.gameboard.placeShip(new Ship(2), [
-            [7, 3],
-            [7, 4],
-        ]);
+        const shipSizes = [3, 2];
+
+        shipSizes.forEach((length) => {
+            let placed = false;
+
+            while (!placed) {
+                const isHorizontal = Math.random() < 0.5;
+
+                const row = Math.floor(Math.random() * 10);
+                const col = Math.floor(Math.random() * 10);
+
+                const coordinates = [];
+
+                for (let i = 0; i < length; i++) {
+                    const r = isHorizontal ? row : row + i;
+                    const c = isHorizontal ? col + i : col;
+
+                    if (r >= 10 || c >= 10) {
+                        coordinates.length = 0;
+                        break;
+                    }
+
+                    coordinates.push([r, c]);
+                }
+
+                if (coordinates.length !== length) continue;
+
+                const overlapping = enemyPlayer.gameboard.ships.some(
+                    ({ coordinates: existing }) =>
+                        existing.some(([r, c]) =>
+                            coordinates.some(([nr, nc]) => nr === r && nc === c)
+                        )
+                );
+
+                if (overlapping) continue;
+
+                enemyPlayer.gameboard.placeShip(new Ship(length), coordinates);
+                placed = true;
+            }
+        });
     };
 
     const initGame = (mode) => {

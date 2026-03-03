@@ -176,6 +176,23 @@ const DomController = (() => {
         console.log('Player ships rendered');
     };
 
+    const renderEnemyShipsForDebug = () => {
+        const enemy = GameController.getPlayer2();
+
+        enemy.gameboard.ships.forEach(({ coordinates }) => {
+            coordinates.forEach(([row, col]) => {
+                const cell = enemyBoardEl.querySelector(
+                    `.cell[data-row="${row}"][data-col="${col}"]`
+                );
+
+                if (cell) {
+                    cell.classList.add('ship');
+                    cell.style.opacity = '0.4'; // visually distinguish from player ships
+                }
+            });
+        });
+    };
+
     const renderStatusBar = () => {
         const player = GameController.getPlayer1();
         const enemy = GameController.getPlayer2();
@@ -306,6 +323,9 @@ const DomController = (() => {
         renderPlayerShips();
         renderStatusBar();
         bindEnemyBoardEvents();
+
+        // For debugging: show enemy ships
+        renderEnemyShipsForDebug();
     };
 
     const initUI = () => {
