@@ -97,7 +97,7 @@ describe('Gameboard class tests', () => {
 
         const result = gameboard.receiveAttack([0, 1]);
 
-        expect(result).toBe('hit');
+        expect(result.result).toBe('hit');
         expect(ship.hits).toBe(1);
     });
 
@@ -113,7 +113,7 @@ describe('Gameboard class tests', () => {
 
         const result = gameboard.receiveAttack([5, 5]);
 
-        expect(result).toBe('miss');
+        expect(result.result).toBe('miss');
         expect(gameboard.missedShots).toContainEqual([5, 5]);
         expect(ship.hits).toBe(0);
     });
@@ -123,7 +123,7 @@ describe('Gameboard class tests', () => {
         gameboard.receiveAttack([5, 5]);
         const result = gameboard.receiveAttack([5, 5]);
 
-        expect(result).toBe('invalid');
+        expect(result.result).toBe('invalid');
         expect(gameboard.missedShots.length).toBe(1);
     });
     test('receiveAttack returns "invalid" for duplicate hit', () => {
@@ -139,8 +139,20 @@ describe('Gameboard class tests', () => {
         const first = gameboard.receiveAttack([0, 1]);
         const second = gameboard.receiveAttack([0, 1]);
 
-        expect(first).toBe('hit');
-        expect(second).toBe('invalid');
+        expect(first.result).toBe('hit');
+        expect(second.result).toBe('invalid');
         expect(ship.hits).toBe(1);
+    });
+    test('Gameboard state snapshot', () => {
+        const gameboard = new Gameboard();
+        const ship = new Ship(2);
+
+        gameboard.placeShip(ship, [
+            [0, 0],
+            [0, 1],
+        ]);
+        gameboard.receiveAttack([0, 0]);
+
+        expect(gameboard.hitShots).toEqual([[0, 0]]);
     });
 });

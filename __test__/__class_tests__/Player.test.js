@@ -60,4 +60,22 @@ describe('Player class', () => {
         expect(player2.attemptedAttacks.size).toBe(2);
         Math.random.mockRestore();
     });
+
+    test('AI clears queue when ship sinks', () => {
+        const player1 = new Player('Player1');
+        const player2 = new Player('Computer');
+
+        const ship = new Ship(1);
+        player1.gameboard.placeShip(ship, [[0, 0]]);
+
+        jest.spyOn(Math, 'random')
+            .mockReturnValueOnce(0)
+            .mockReturnValueOnce(0);
+
+        player2.makeRandomAttack(player1);
+
+        expect(player2.targetQueue.length).toBe(0);
+
+        Math.random.mockRestore();
+    });
 });

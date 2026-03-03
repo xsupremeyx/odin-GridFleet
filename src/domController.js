@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 
+import render from 'dom-serializer';
 import GameController from './gameController.js';
 
 const DomController = (() => {
@@ -100,7 +101,6 @@ const DomController = (() => {
             renderMisses(playerBoardEl, player.gameboard.missedShots);
 
             renderStatusBar();
-            renderStatusBar();
 
             if (GameController.isGameOver()) {
                 showEndgameModal();
@@ -122,10 +122,12 @@ const DomController = (() => {
 
         document.body.appendChild(modal);
 
-        document.querySelector('#restart-game').addEventListener('click',() => {
-            modal.remove();
-            resetGame();
-        });
+        document
+            .querySelector('#restart-game')
+            .addEventListener('click', () => {
+                modal.remove();
+                resetGame();
+            });
     };
 
     const resetGame = () => {
@@ -157,6 +159,36 @@ const DomController = (() => {
         });
     };
 
+    const bindPlayerBoardPlacement = () => {
+        playerBoardEl.addEventListener('click', (e) => {
+            if (GameController.getPhase() !== 'placement') return;
+
+            const cell = e.target;
+            if (!cell.classList.contains('cell')) return;
+
+            const row = Number(cell.dataset.row);
+            const col = Number(cell.dataset.col);
+
+            // const coordinates = [
+            //     [row, col],
+            //     [row, col + 1],
+            //     [row, col + 2],
+            // ];
+
+            // GameController
+            //     .getPlayer1()
+            //     .gameboard
+            //     .placeShip({length: 3, hits: 0, isSunk: () => false}, coordinates);
+
+            const placed = GameController.placePlayerShip(row, col);
+            if (placed) {
+                renderBoards();
+                renderPlayerShips();
+                renderStatusBar();
+            }
+        });
+    };
+
     const initUI = () => {
         GameController.initGame();
         cacheDom();
@@ -164,6 +196,7 @@ const DomController = (() => {
         renderPlayerShips();
         renderStatusBar();
         bindEnemyBoardEvents();
+        bindPlayerBoardPlacement();
     };
 
     return {

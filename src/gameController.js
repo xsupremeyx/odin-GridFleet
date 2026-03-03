@@ -9,17 +9,10 @@ const GameController = (() => {
 
     let gameOver;
     let winner;
+    let phase;
+    let shipsToPlace;
 
-    const hardCodedShips = () => {
-        currentPlayer.gameboard.placeShip(new Ship(3), [
-            [0, 0],
-            [0, 1],
-            [0, 2],
-        ]);
-        currentPlayer.gameboard.placeShip(new Ship(2), [
-            [2, 0],
-            [2, 1],
-        ]);
+    const placeComputerShips = () => {
         enemyPlayer.gameboard.placeShip(new Ship(3), [
             [5, 5],
             [5, 6],
@@ -32,13 +25,17 @@ const GameController = (() => {
     };
 
     const initGame = () => {
+        shipsToPlace = [3, 2]; // Example ship lengths for placement phase
         gameOver = false;
         winner = null;
+        phase = 'placement';
+
         player1 = new Player('Player1');
         player2 = new Player('Computer');
         currentPlayer = player1;
         enemyPlayer = player2;
-        hardCodedShips();
+
+        // hardCodedShips();
     };
 
     const getCurrentPlayer = () => currentPlayer;
@@ -47,16 +44,18 @@ const GameController = (() => {
     const getWinner = () => winner;
     const getPlayer1 = () => player1;
     const getPlayer2 = () => player2;
+    const getPhase = () => phase;
+    const getShipsToPlace = () => shipsToPlace;
 
-    // const switchPlayer = () => {
-    //     [currentPlayer, enemyPlayer] = [enemyPlayer, currentPlayer];
-    // };
+    const startBattlePhase = () => {
+        phase = 'battle';
+    };
 
     const playTurn = (coordinate) => {
-        if (gameOver) return;
+        if (gameOver || phase !== 'battle') return;
 
         const playerResult = player1.attack(player2, coordinate);
-        if (playerResult === 'invalid') return;
+        if (playerResult.result === 'invalid') return;
 
         if (player2.gameboard.areAllShipsSunk()) {
             gameOver = true;
@@ -72,6 +71,37 @@ const GameController = (() => {
         }
     };
 
+    const placePlayerShip = (row, col) => {
+        if (phase !== 'placement') return false;
+        if (shipsToPlace.length === 0) return false;
+
+        const length = shipsToPlace[0];
+
+        const coordinates = [];
+        for (let i = 0; i < length; i++) {
+            if (col + i >= 10) return false; // Ensure ship doesn't go out of bounds
+            coordinates.push([row, col + i]);
+        }
+
+        const overlapping = player1.gameboard.ships.some(
+            ({ coordinates: existing }) =>
+                existing.some(([r, c]) =>
+                    coordinates.some(([nr, nc]) => nr === r && nc === c)
+                )
+        );
+
+        if (overlapping) return false;
+
+        player1.gameboard.placeShip(new Ship(length), coordinates);
+        shipsToPlace.shift();
+
+        if (shipsToPlace.length === 0) {
+            startBattlePhase();
+            placeComputerShips(); // temporarily place AI
+        }
+        return true;
+    };
+
     return {
         initGame,
         getCurrentPlayer,
@@ -81,6 +111,10 @@ const GameController = (() => {
         getWinner,
         getPlayer1,
         getPlayer2,
+        getPhase,
+        startBattlePhase,
+        getShipsToPlace,
+        placePlayerShip,
     };
 })();
 
