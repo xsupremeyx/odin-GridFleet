@@ -18,15 +18,26 @@ const DomController = (() => {
     const renderHeroScreen = () => {
         app.innerHTML = `
         <main class="hero-screen">
+            <div class="hero-bg-glow"></div>
+
             <section class="hero-content">
-                <h1 class="game-title">GridFleet</h1>
+                <h1 class="game-title">
+                    <span class="title-main">GridFleet</span>
+                    <span class="title-sub">Naval Strategy Reimagined</span>
+                </h1>
+
+                <p class="hero-tagline">
+                    Outsmart. Outmaneuver. Obliterate.
+                </p>
 
                 <div class="mode-selector">
                     <button data-mode="pvc">Player vs Computer</button>
                     <button data-mode="pvp">Player vs Player</button>
                 </div>
 
-                <button id="start-game" class="primary-btn">Start Game</button>
+                <button id="start-game" class="primary-btn hero-btn">
+                    Deploy Fleet
+                </button>
             </section>
         </main>
         `;
