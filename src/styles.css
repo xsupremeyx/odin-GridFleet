@@ -168,6 +168,12 @@ body {
     margin-top: 1rem;
 }
 
+.board.active {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+    transform: scale(1.01);
+    transition: 0.2s ease;
+}
+
 .cell {
     width: var(--grid-size);
     height: var(--grid-size);
@@ -209,6 +215,57 @@ body {
     color: white;
     font-weight: bold;
     height: 100%;
+}
+
+.hit {
+    background: var(--danger);
+    border-color: var(--danger);
+    animation: hitPulse 0.4s ease;
+}
+
+@keyframes hitPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.miss {
+    background: #475569;
+    position: relative;
+    overflow: hidden;
+}
+
+.miss::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ripple 0.5s ease;
+}
+
+@keyframes ripple {
+    from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+
+    to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
 }
 
 .preview-valid {
@@ -255,6 +312,33 @@ body {
 .board.disabled {
     pointer-events: none;
     opacity: 0.8;
+}
+
+/* Status Bar */
+
+#status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-panel);
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.status-left {
+    font-weight: 600;
+}
+
+.status-center {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.status-right {
+    color: var(--muted);
 }
 
 /* Endgame Modal */

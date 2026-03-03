@@ -99,17 +99,20 @@ const GameController = (() => {
     const getGameMode = () => gameMode;
 
     const playTurn = (coordinate) => {
-        if (gameOver || phase !== 'battle') return;
+        if (gameOver || phase !== 'battle') return null;
 
         const result = currentPlayer.attack(enemyPlayer, coordinate);
 
-        if (!result || result.result === 'invalid') return;
+        if (!result || result.result === 'invalid') return null;
 
         if (enemyPlayer.gameboard.areAllShipsSunk()) {
             gameOver = true;
             winner = currentPlayer;
         }
+
+        return result.result;
     };
+
     const setWinner = (player) => {
         winner = player;
         gameOver = true;

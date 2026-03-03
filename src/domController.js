@@ -1,5 +1,4 @@
 /* global setTimeout */
-
 import GameController from './gameController.js';
 
 const DomController = (() => {
@@ -185,9 +184,10 @@ const DomController = (() => {
         });
     };
 
-    const renderStatusBar = () => {
+    const renderStatusBar = (lastMove = null) => {
         const current = GameController.getCurrentPlayer();
         const enemy = GameController.getEnemyPlayer();
+        const mode = GameController.getGameMode();
 
         const currentAlive = current.gameboard.ships.filter(
             ({ ship }) => !ship.isSunk()
@@ -197,9 +197,25 @@ const DomController = (() => {
             ({ ship }) => !ship.isSunk()
         ).length;
 
+        const turnLabel =
+            mode === 'pvc' ? 'Your Turn' : `${current.type}'s Turn`;
+
+        let resultText = '';
+        if (lastMove === 'hit') resultText = '🎯 Hit!';
+        if (lastMove === 'miss') resultText = '• Miss';
+
         statusBar.innerHTML = `
-            <div>Your Ships: ${currentAlive}</div>
-            <div>Enemy Ships: ${enemyAlive}</div>
+            <div class="status-left">
+                <strong>${turnLabel}</strong>
+            </div>
+
+            <div class="status-center">
+                ${resultText}
+            </div>
+
+            <div class="status-right">
+                🚢 ${currentAlive} | ${enemyAlive}
+            </div>
         `;
     };
 
@@ -228,9 +244,10 @@ const DomController = (() => {
         const col = Number(cell.dataset.col);
 
         isProcessingTurn = true;
-        GameController.playTurn([row, col]);
+        const result = GameController.playTurn([row, col]);
 
         renderBattleSetup();
+        renderStatusBar(result);
 
         if (GameController.isGameOver()) {
             isProcessingTurn = false;
@@ -241,15 +258,19 @@ const DomController = (() => {
         // PVC MODE
         if (GameController.getGameMode() === 'pvc') {
             enemyBoardEl.classList.add('disabled');
+            renderStatusBar();
+            statusBar.querySelector('.status-center').textContent =
+                '🤖 Thinking...';
 
             setTimeout(() => {
                 // Switch to computer
                 GameController.switchTurn();
 
                 // Computer attacks
-                GameController.getCurrentPlayer().makeRandomAttack(
-                    GameController.getEnemyPlayer()
-                );
+                const aiResult =
+                    GameController.getCurrentPlayer().makeRandomAttack(
+                        GameController.getEnemyPlayer()
+                    );
 
                 // Check if human lost
                 if (
@@ -257,6 +278,7 @@ const DomController = (() => {
                 ) {
                     GameController.setWinner(GameController.getCurrentPlayer());
                     renderBattleSetup();
+                    renderStatusBar(aiResult?.result);
 
                     isProcessingTurn = false;
                     enemyBoardEl.classList.remove('disabled');
@@ -269,6 +291,7 @@ const DomController = (() => {
                 GameController.switchTurn();
 
                 renderBattleSetup();
+                renderStatusBar(aiResult?.result);
 
                 isProcessingTurn = false;
                 enemyBoardEl.classList.remove('disabled');
@@ -486,6 +509,11 @@ const DomController = (() => {
 
         const current = GameController.getCurrentPlayer();
         const enemy = GameController.getEnemyPlayer();
+
+        playerBoardEl.classList.remove('active');
+        enemyBoardEl.classList.remove('active');
+
+        enemyBoardEl.classList.add('active');
 
         // LEFT BOARD → Your Fleet (current player)
         current.gameboard.ships.forEach(({ coordinates }) => {
